@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from app import app
+from model.center import Center
+from model.species import Species
 
 db = SQLAlchemy(app)
 
@@ -18,6 +20,16 @@ class Animals(db.Model):
     def json(self):
         return {'name': self.name, 'center_id': self.center_id, 'species': self.species,
                 'description': self.description, 'age': self.age, 'price': self.price}
+
+    def create_animal(name, center, species, age, price=None, description=None):
+        center_from_db = Center.get_certain_center(center)
+        species_from_db = Species.get_concrete_species(species)
+        if not species_from_db:
+            raise Exception()
+        new_animal = Animals(name=name, center_id=center_from_db,
+                             species_id=species_from_db, age=age, price=price, description=description)
+        db.session.add(new_animal)
+        db.session.commit()
 
     def get_all_animals():
         return [Animals.json(animal) for animal in Animals.query.all()]

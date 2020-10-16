@@ -15,12 +15,18 @@ class Species(db.Model):
     description = db.Column(db.Text, nullable=False)
     price = db.Column(db.Integer, nullable=False)
 
+    def create_cpecies(name, description, price):
+        new_species = Species(name=name, description=description, price=price)
+        db.session.add(new_species)
+        db.session.commit()
+
+
     def get_all_species():
         res = Species.query.with_entities(Species.name, func.count(Species.id)).group_by(Species.name).all()
         return [{'name': data.get('name'), 'count': data.get('count')} for data in res]
 
-    def get_concrete_species(id):
-        species = Species.query.filter_by(id=id).first()
+    def get_concrete_species_by_name(name):
+        species = Species.query.filter_by(name=name).first()
         species_id = species.id
         species_login = species.login
         return [f"{animal['name']} - {species_id} - {species_login}"

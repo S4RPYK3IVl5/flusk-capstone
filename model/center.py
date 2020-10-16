@@ -16,7 +16,7 @@ class Center(db.Model):
     def _format_model(self):
         return f"{self.login} - {self.id}"
 
-    def crate_center(login, password, address):
+    def create_center(login, password, address):
         new_center = Center(id=id, login=login, password=password, address=address)
         db.session.add(new_center)
         db.session.commit()
@@ -31,8 +31,8 @@ class Center(db.Model):
     def get_all_centers():
         return [Center._format_model(center) for center in Center.query.all()]
 
-    def get_certain_center(id):
-        center = Center.query.filter_by(id=id).first()
+    def get_certain_center_by_address(adress):
+        center = Center.query.filter_by(adress=adress).first()
         center_id = center.id
         center_login = center.login
         return [f"{animal['name']} - {center_id} - {center_login}"
