@@ -1,9 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
-from settings import app
 from model.center import Center
 from model.species import Species
-
-db = SQLAlchemy(app)
+from settings import db
 
 
 class Animals(db.Model):

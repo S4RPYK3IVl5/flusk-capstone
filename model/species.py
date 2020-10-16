@@ -1,8 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
-from settings import app
 from sqlalchemy import func
 
-db = SQLAlchemy(app)
+from settings import db
 
 
 class Species(db.Model):
@@ -12,6 +10,7 @@ class Species(db.Model):
     name = db.Column(db.String(80), nullable=False)
     description = db.Column(db.Text, nullable=False)
     price = db.Column(db.Integer, nullable=False)
+    animals = db.relationship("Animals")
 
     def create_cpecies(name, description, price):
         new_species = Species(name=name, description=description, price=price)

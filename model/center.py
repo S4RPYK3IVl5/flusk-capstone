@@ -1,7 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-from settings import app
-
-db = SQLAlchemy(app)
+from settings import db
 
 
 class Center(db.Model):
@@ -11,6 +8,7 @@ class Center(db.Model):
     login = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     address = db.Column(db.String(80), unique=True, nullable=False)
+    animals = db.relationship("Animals")
 
     def _format_model(self):
         return f"{self.login} - {self.id}"
