@@ -141,6 +141,5 @@ def delete_animal(id, **kwargs):
         return Response("This center is not owner of this animal", 400)
 
 
-
 if __name__ == '__main__':
     app.run(port="8081")

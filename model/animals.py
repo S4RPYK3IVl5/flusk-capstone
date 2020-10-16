@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from app import app
+from settings import app
 from model.center import Center
 from model.species import Species
 
@@ -47,8 +47,8 @@ class Animals(db.Model):
         existing_animal = Animals.query.filter_by(id=id).first()
 
         existing_animal.name = name
-        existing_animal.center_id = Center.get_center_by_login(center_login)
-        existing_animal.species_id = Species.get_concrete_species_by_name(species_name)
+        existing_animal.center_id = Center.get_center_by_login(center_login).id
+        existing_animal.species_id = Species.get_concrete_species_by_name(species_name).id
         existing_animal.description = description
         existing_animal.age = age
         existing_animal.price = price

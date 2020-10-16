@@ -1,6 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from app import app
-from model.animals import Animals
+from settings import app
 
 db = SQLAlchemy(app)
 
@@ -30,13 +29,6 @@ class Center(db.Model):
 
     def get_all_centers():
         return [Center._format_model(center) for center in Center.query.all()]
-
-    def get_certain_center_by_address(adress):
-        center = Center.query.filter_by(adress=adress).first()
-        center_id = center.id
-        center_login = center.login
-        return [f"{animal['name']} - {center_id} - {center_login}"
-                for animal in Animals.get_all_animals_from_center(center_id)]
 
     def get_center_by_login(login):
         center = Center.query.filter_by(login=login).first()

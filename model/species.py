@@ -1,8 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-from app import app
+from settings import app
 from sqlalchemy import func
-
-from model.animals import Animals
 
 db = SQLAlchemy(app)
 
@@ -27,7 +25,4 @@ class Species(db.Model):
 
     def get_concrete_species_by_name(name):
         species = Species.query.filter_by(name=name).first()
-        species_id = species.id
-        species_login = species.login
-        return [f"{animal['name']} - {species_id} - {species_login}"
-                for animal in Animals.get_all_animals_with_species(species_id)]
+        return species
