@@ -15,12 +15,12 @@ class Animals(db.Model):
     price = db.Column(db.Integer, nullable=True)
 
     def json(self):
-        return {'name': self.name, 'center_id': self.center_id, 'species': self.species,
+        return {'name': self.name, 'center_id': self.center_id, 'species': self.species_id,
                 'description': self.description, 'age': self.age, 'price': self.price}
 
-    def create_animal(name, center, species, age, price=None, description=None):
-        center_from_db = Center.get_center_by_login(center)
-        species_from_db = Species.get_concrete_species(species)
+    def create_animal(name, center, species_name, age, price=None, description=None):
+        center_from_db = Center.get_center_by_login(center).id
+        species_from_db = Species.get_concrete_species_by_name(species_name).id
         if not species_from_db:
             raise Exception()
         new_animal = Animals(name=name, center_id=center_from_db,
@@ -54,7 +54,7 @@ class Animals(db.Model):
 
     def delete_animal(id, center_login):
         on_delete = Animals.query.filter_by(id=id)
-        if (on_delete.center_id == Center.get_center_by_login(center_login).id):
+        if on_delete.center_id == Center.get_center_by_login(center_login).id:
             on_delete.delete()
             db.session.commit()
         else:

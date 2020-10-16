@@ -11,10 +11,10 @@ class Center(db.Model):
     animals = db.relationship("Animals")
 
     def _format_model(self):
-        return f"{self.login} - {self.id}"
+        return f"{self.login} - {self.id} \n"
 
     def create_center(login, password, address):
-        new_center = Center(id=id, login=login, password=password, address=address)
+        new_center = Center(login=login, password=password, address=address)
         db.session.add(new_center)
         db.session.commit()
 
@@ -31,3 +31,10 @@ class Center(db.Model):
     def get_center_by_login(login):
         center = Center.query.filter_by(login=login).first()
         return center
+
+    def get_certain_center(id):
+        center = Center.query.filter_by(id=id).first()
+        center_id = center.id
+        center_login = center.login
+        return [f"{animal['name']} - {center_id} - {center_login}"
+                for animal in center.animals]
