@@ -22,7 +22,7 @@ class Animals(db.Model):
                 'description': self.description, 'age': self.age, 'price': self.price}
 
     def create_animal(name, center, species, age, price=None, description=None):
-        center_from_db = Center.get_certain_center(center)
+        center_from_db = Center.get_center_by_login(center)
         species_from_db = Species.get_concrete_species(species)
         if not species_from_db:
             raise Exception()
@@ -43,14 +43,22 @@ class Animals(db.Model):
     def get_all_animals_with_species(species_id):
         return [Animals.json(animal) for animal in Animals.query.filter_by(species_id=species_id)]
 
-    def update_animal(id, name, center_id, species_id, description, age, price):
+    def update_animal(id, name, center_login, species_name, description, age, price):
         existing_animal = Animals.query.filter_by(id=id).first()
 
         existing_animal.name = name
-        existing_animal.center_id = center_id
-        existing_animal.species_id = species_id
+        existing_animal.center_id = Center.get_center_by_login(center_login)
+        existing_animal.species_id = Species.get_concrete_species_by_name(species_name)
         existing_animal.description = description
         existing_animal.age = age
         existing_animal.price = price
 
         db.session.commit()
+
+    def delete_animal(id, center_login):
+        on_delete = Animals.query.filter_by(id=id)
+        if (on_delete.center_id == Center.get_center_by_login(center_login).id):
+            on_delete.delete()
+            db.session.commit()
+        else:
+            raise Exception()

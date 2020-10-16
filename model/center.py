@@ -38,3 +38,6 @@ class Center(db.Model):
         return [f"{animal['name']} - {center_id} - {center_login}"
                 for animal in Animals.get_all_animals_from_center(center_id)]
 
+    def get_center_by_login(login):
+        center = Center.query.filter_by(login=login).first()
+        return center

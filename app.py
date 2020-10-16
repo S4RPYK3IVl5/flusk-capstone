@@ -16,8 +16,8 @@ def token_required(f):
     def wrapper(*args, **kwargs):
         token = request.args.get('token')
         try:
-            jwt.decode(token, app.config['SECRET_KEY'])
-            return f(*args, **kwargs)
+            payload = jwt.decode(token, app.config['SECRET_KEY'])
+            return f(*args, **kwargs, login=payload['login'])
         except:
             return jsonify({'error': "Need a valid token to view this page"}), 401
     return wrapper
@@ -32,7 +32,7 @@ def login_in():
 
     if Center.is_center_exist(login, password):
         expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=100)
-        token = jwt.encode({'exp': expiration_date}, app.config['SECRET_KEY'], algorithm="HS256")
+        token = jwt.encode({'exp': expiration_date, 'login': login}, app.config['SECRET_KEY'], algorithm="HS256")
         return token
     else:
         return Response('', 401, mimetype=APPLICATION_JSON)
@@ -83,7 +83,7 @@ def register_center():
 
 @app.route('/animals', methods=["POST"])
 @token_required
-def register_animal():
+def register_animal(**kwargs):
 
     get_request = request.get_json()
     name = str(get_request['name'])
@@ -102,7 +102,7 @@ def register_animal():
 
 @app.route('/species', methods=["POST"])
 @token_required
-def register_species():
+def register_species(**kwargs):
 
     get_request = request.get_json()
     name = str(get_request['name'])
@@ -116,7 +116,7 @@ def register_species():
 
 @app.route('/animals/<int:id>', methods=["PUT"])
 @token_required
-def replace_animal(id):
+def replace_animal(id, **kwargs):
 
     get_request = request.get_json()
     name = str(get_request['name'])
@@ -129,6 +129,17 @@ def replace_animal(id):
     Animals.update_animal(id, name, center, species, description, age, price)
 
     return Response("Animal was successfully updated", 200, mimetype=APPLICATION_JSON)
+
+
+@app.route('/animals/<int:id>', methods=["DELETE"])
+@token_required
+def delete_animal(id, **kwargs):
+    try:
+        Animals.delete_animal(id, kwargs['login'])
+        return Response("Animal was deleted", 200)
+    except:
+        return Response("This center is not owner of this animal", 400)
+
 
 
 if __name__ == '__main__':
