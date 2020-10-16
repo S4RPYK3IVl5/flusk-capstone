@@ -103,6 +103,7 @@ def register_animal():
 @app.route('/species', methods=["POST"])
 @token_required
 def register_species():
+
     get_request = request.get_json()
     name = str(get_request['name'])
     description = str(get_request['description'])
@@ -111,6 +112,23 @@ def register_species():
     Species.create_cpecies(name, description, price)
 
     return Response({'res': "Species was successfully registered"}, 200, mimetype=APPLICATION_JSON)
+
+
+@app.route('/animals/<int:id>', methods=["PUT"])
+@token_required
+def replace_animal(id):
+
+    get_request = request.get_json()
+    name = str(get_request['name'])
+    center = str(get_request['center'])
+    species = str(get_request['species'])
+    age = str(get_request['age'])
+    price = str(get_request.get('price', None))
+    description = str(get_request.get('description', None))
+
+    Animals.update_animal(id, name, center, species, description, age, price)
+
+    return Response("Animal was successfully updated", 200, mimetype=APPLICATION_JSON)
 
 
 if __name__ == '__main__':

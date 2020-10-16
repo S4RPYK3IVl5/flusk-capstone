@@ -42,3 +42,15 @@ class Animals(db.Model):
 
     def get_all_animals_with_species(species_id):
         return [Animals.json(animal) for animal in Animals.query.filter_by(species_id=species_id)]
+
+    def update_animal(id, name, center_id, species_id, description, age, price):
+        existing_animal = Animals.query.filter_by(id=id).first()
+
+        existing_animal.name = name
+        existing_animal.center_id = center_id
+        existing_animal.species_id = species_id
+        existing_animal.description = description
+        existing_animal.age = age
+        existing_animal.price = price
+
+        db.session.commit()
