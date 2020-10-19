@@ -1,43 +1,32 @@
 import datetime
 import traceback
-from functools import wraps
+
+import jsonschema
+import jwt
+from flask import request
 
 from model.animals import Animals
 from model.center import Center
 from model.species import Species
+from schemas import request_schemas
 from settings import app
-from flask import request, Response, jsonify
-import jwt
+from utils import schema_validator_catcher, token_required
 
 APPLICATION_JSON = "application/json"
 
 
-def token_required(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        token = request.get_json().get('token')
-        if not token:
-            return jsonify({"error": "You need to provide token"})
-        try:
-            payload = jwt.decode(token, app.config['SECRET_KEY'])
-        except:
-            traceback.print_exc()
-            return jsonify({'error': "Need a valid token to view this page"}), 401
-        return f(*args, **kwargs, login=payload['login'])
-    return wrapper
-
-
 @app.route("/login", methods=["POST"])
+@schema_validator_catcher
 def login_in():
-
     get_request = request.get_json()
+    jsonschema.validate(get_request, request_schemas.login_center_schema)
     login = str(get_request['login'])
     password = str(get_request['password'])
 
     if Center.is_center_exist(login, password):
         expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=60 * 60 * 24)
         token = jwt.encode({'exp': expiration_date, 'login': login}, app.config['SECRET_KEY'], algorithm="HS256")
-        return token
+        return {'token': token}
     else:
         return {'res': 'Incorrect login or password'}, 401
 
@@ -73,9 +62,11 @@ def get_concrete_species(id):
 
 
 @app.route('/register', methods=["POST"])
+@schema_validator_catcher
 def register_center():
 
     get_request = request.get_json()
+    jsonschema.validate(get_request, request_schemas.register_center_schema)
     login = str(get_request['login'])
     password = str(get_request['password'])
     address = str(get_request['address'])
@@ -90,6 +81,7 @@ def register_center():
 def register_animal(**kwargs):
 
     get_request = request.get_json()
+    jsonschema.validate(get_request, request_schemas.register_update_animal_schema)
     name = str(get_request['name'])
     center = str(get_request['center'])
     species = str(get_request['species'])
@@ -110,6 +102,7 @@ def register_animal(**kwargs):
 def register_species(**kwargs):
 
     get_request = request.get_json()
+    jsonschema.validate(get_request, request_schemas.register_species_schema)
     name = str(get_request['name'])
     description = str(get_request['description'])
     price = str(get_request['price'])
@@ -124,6 +117,7 @@ def register_species(**kwargs):
 def replace_animal(id, **kwargs):
 
     get_request = request.get_json()
+    jsonschema.validate(get_request, request_schemas.register_update_animal_schema)
     name = str(get_request['name'])
     center = str(get_request['center'])
     species = str(get_request['species'])
@@ -133,7 +127,7 @@ def replace_animal(id, **kwargs):
 
     Animals.update_animal(id, name, center, species, description, age, price)
 
-    return Response("Animal was successfully updated", 200, mimetype=APPLICATION_JSON)
+    return {'res': "Animal was successfully updated"}, 200
 
 
 @app.route('/animals/<int:id>', methods=["DELETE"])
@@ -141,10 +135,10 @@ def replace_animal(id, **kwargs):
 def delete_animal(id, **kwargs):
     try:
         Animals.delete_animal(id, kwargs['login'])
-        return Response("Animal was deleted", 200)
+        return {'res': "Animal was deleted"}, 200
     except:
         traceback.print_exc()
-        return Response("This center is not owner of this animal", 400)
+        return {'res': "This center is not owner of this animal"}, 400
 
 
 if __name__ == '__main__':
