@@ -1,5 +1,3 @@
-from sqlalchemy import func
-
 from settings import db
 
 
@@ -17,11 +15,10 @@ class Species(db.Model):
         db.session.add(new_species)
         db.session.commit()
 
-
     def get_all_species():
-        res = Species.query.with_entities(Species.name, func.count(Species.id)).group_by(Species.name).all()
-        return [{'name': data.get('name'), 'count': data.get('count')} for data in res]
+        species = Species.query.all()
+        return [f"{data.id} - {data.name} - {len(data.animals)}" for data in species]
 
-    def get_concrete_species_by_name(name):
-        species = Species.query.filter_by(name=name).first()
-        return species
+    def get_concrete_species_by_id(id):
+        specie = Species.query.filter_by(id=id).first()
+        return f"{specie.name} - {len(specie.animals)}"

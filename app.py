@@ -35,41 +35,41 @@ def login_in():
     password = str(get_request['password'])
 
     if Center.is_center_exist(login, password):
-        expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=1000)
+        expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=60 * 60 * 24)
         token = jwt.encode({'exp': expiration_date, 'login': login}, app.config['SECRET_KEY'], algorithm="HS256")
         return token
     else:
         return Response('Incorrect login or password', 401, mimetype=APPLICATION_JSON)
 
 
-@app.route('/animals', methods=["GET"])
+@app.route('/animals', methods=["GET"]) #
 def get_all_animals():
-    return {'animals': Animals.get_all_animals()}
+    return {'animals': Animals.get_all_animals()}, 200
 
 
-@app.route('/animals/<int:id>', methods=["GET"])
+@app.route('/animals/<int:id>', methods=["GET"]) #
 def get_certain_animal(id):
-    return Response(Animals.get_certain_animal(id), 200, mimetype=APPLICATION_JSON)
+    return {'animal': Animals.get_certain_animal(id)}, 200
 
 
-@app.route('/centers', methods=["GET"])
+@app.route('/centers', methods=["GET"]) #
 def get_all_centers():
-    return Response({"center": Center.get_all_centers()}, 200, mimetype=APPLICATION_JSON)
+    return {"centers": Center.get_all_centers()}, 200
 
 
-@app.route('/centers/<int:id>', methods=["GET"])
+@app.route('/centers/<int:id>', methods=["GET"]) #
 def get_certain_center(id):
-    return Response(Center.get_certain_center(id), 200, mimetype=APPLICATION_JSON)
+    return {"center": Center.get_certain_center(id)}, 200
 
 
-@app.route('/species ', methods=["GET"])
+@app.route('/species', methods=["GET"]) #
 def get_all_species():
-    return Response(Species.get_all_species(), 200, mimetype=APPLICATION_JSON)
+    return {'species': Species.get_all_species()}, 200
 
 
-@app.route('/species/<int:id>', methods=["GET"])
+@app.route('/species/<int:id>', methods=["GET"]) #
 def get_concrete_species(id):
-    return Response(Species.get_concrete_species(id), 200, mimetype=APPLICATION_JSON)
+    return {'specie': Species.get_concrete_species_by_id(id)}, 200
 
 
 @app.route('/register', methods=["POST"])

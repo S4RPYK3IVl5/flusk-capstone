@@ -11,7 +11,7 @@ class Center(db.Model):
     animals = db.relationship("Animals")
 
     def _format_model(self):
-        return f"{self.login} - {self.id} \n"
+        return f"{self.login} - {self.id}"
 
     def create_center(login, password, address):
         new_center = Center(login=login, password=password, address=address)
@@ -36,5 +36,5 @@ class Center(db.Model):
         center = Center.query.filter_by(id=id).first()
         center_id = center.id
         center_login = center.login
-        return [f"{animal['name']} - {center_id} - {center_login}"
+        return [f"{animal.name} - {center_id} - {center_login}"
                 for animal in center.animals]

@@ -15,7 +15,7 @@ class Animals(db.Model):
     price = db.Column(db.Integer, nullable=True)
 
     def json(self):
-        return {'name': self.name, 'center_id': self.center_id, 'species': self.species_id,
+        return {'id': self.id, 'name': self.name, 'center_id': self.center_id, 'species': self.species_id,
                 'description': self.description, 'age': self.age, 'price': self.price}
 
     def create_animal(name, center, species_name, age, price=None, description=None):
