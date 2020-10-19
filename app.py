@@ -20,10 +20,10 @@ def token_required(f):
             return jsonify({"error": "You need to provide token"})
         try:
             payload = jwt.decode(token, app.config['SECRET_KEY'])
-            return f(*args, **kwargs, login=payload['login'])
         except:
             traceback.print_exc()
             return jsonify({'error': "Need a valid token to view this page"}), 401
+        return f(*args, **kwargs, login=payload['login'])
     return wrapper
 
 
@@ -39,35 +39,35 @@ def login_in():
         token = jwt.encode({'exp': expiration_date, 'login': login}, app.config['SECRET_KEY'], algorithm="HS256")
         return token
     else:
-        return Response('Incorrect login or password', 401, mimetype=APPLICATION_JSON)
+        return {'res': 'Incorrect login or password'}, 401
 
 
-@app.route('/animals', methods=["GET"]) #
+@app.route('/animals', methods=["GET"])
 def get_all_animals():
     return {'animals': Animals.get_all_animals()}, 200
 
 
-@app.route('/animals/<int:id>', methods=["GET"]) #
+@app.route('/animals/<int:id>', methods=["GET"])
 def get_certain_animal(id):
     return {'animal': Animals.get_certain_animal(id)}, 200
 
 
-@app.route('/centers', methods=["GET"]) #
+@app.route('/centers', methods=["GET"])
 def get_all_centers():
     return {"centers": Center.get_all_centers()}, 200
 
 
-@app.route('/centers/<int:id>', methods=["GET"]) #
+@app.route('/centers/<int:id>', methods=["GET"])
 def get_certain_center(id):
     return {"center": Center.get_certain_center(id)}, 200
 
 
-@app.route('/species', methods=["GET"]) #
+@app.route('/species', methods=["GET"])
 def get_all_species():
     return {'species': Species.get_all_species()}, 200
 
 
-@app.route('/species/<int:id>', methods=["GET"]) #
+@app.route('/species/<int:id>', methods=["GET"])
 def get_concrete_species(id):
     return {'specie': Species.get_concrete_species_by_id(id)}, 200
 
@@ -82,7 +82,7 @@ def register_center():
 
     Center.create_center(login, password, address)
 
-    return Response("Center was successfully registered", 200, mimetype=APPLICATION_JSON)
+    return {'res': "Center was successfully registered"}, 200
 
 
 @app.route('/animals', methods=["POST"])
@@ -99,11 +99,10 @@ def register_animal(**kwargs):
 
     try:
         Animals.create_animal(name, center, species, age, price, description)
-        return Response("Animal was created", 200, mimetype=APPLICATION_JSON)
+        return {'res': "Animal was created"}, 200
     except Exception:
         traceback.print_exc()
-        return Response("No such species {species} exist, please, create it firstly",
-                        401, mimetype=APPLICATION_JSON)
+        return {'res': "No such species {species} exist, please, create it firstly"}, 401
 
 
 @app.route('/species', methods=["POST"])
@@ -117,7 +116,7 @@ def register_species(**kwargs):
 
     Species.create_cpecies(name, description, price)
 
-    return Response("Species was successfully registered", 200, mimetype=APPLICATION_JSON)
+    return {'res': "Species was successfully registered"}, 200
 
 
 @app.route('/animals/<int:id>', methods=["PUT"])
@@ -144,6 +143,7 @@ def delete_animal(id, **kwargs):
         Animals.delete_animal(id, kwargs['login'])
         return Response("Animal was deleted", 200)
     except:
+        traceback.print_exc()
         return Response("This center is not owner of this animal", 400)
 
 
