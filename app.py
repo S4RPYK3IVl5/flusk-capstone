@@ -5,6 +5,7 @@ import jsonschema
 import jwt
 from flask import request
 
+from models.access_request import AccessRequest
 from models.animals import Animals
 from models.center import Center
 from models.species import Species
@@ -26,6 +27,7 @@ def login_in():
     if Center.is_center_exist(login, password):
         expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=60 * 60 * 24)
         token = jwt.encode({'exp': expiration_date, 'login': login}, app.config['SECRET_KEY'], algorithm="HS256")
+        AccessRequest.register_access_request(login, datetime.datetime.now())
         return {'token': token}
     else:
         return {'res': 'Incorrect login or password'}, 401
