@@ -1,6 +1,6 @@
 import traceback
 from functools import wraps
-from settings import app
+from config.settings import app
 import jwt
 from flask import request, jsonify
 from jsonschema import ValidationError

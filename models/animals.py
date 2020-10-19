@@ -1,6 +1,6 @@
-from model.center import Center
-from model.species import Species
-from settings import db
+from models.center import Center
+from models.species import Species
+from config.settings import db
 
 
 class Animals(db.Model):

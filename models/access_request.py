@@ -1,4 +1,4 @@
-from settings import db
+from config.settings import db
 
 
 class AccessRequest(db.Model):

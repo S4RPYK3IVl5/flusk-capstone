@@ -5,11 +5,11 @@ import jsonschema
 import jwt
 from flask import request
 
-from model.animals import Animals
-from model.center import Center
-from model.species import Species
+from models.animals import Animals
+from models.center import Center
+from models.species import Species
 from schemas import request_schemas
-from settings import app
+from config.settings import app
 from utils import schema_validator_catcher, token_required, unwrap_data_from_animal_request
 
 APPLICATION_JSON = "application/json"
