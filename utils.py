@@ -11,7 +11,7 @@ def token_required(f):
     def wrapper(*args, **kwargs):
         token = request.get_json().get('token')
         if not token:
-            return jsonify({"error": "You need to provide token"})
+            return {"error": "Toke is required"}, 401
         try:
             payload = jwt.decode(token, app.config['SECRET_KEY'])
         except:
@@ -30,3 +30,15 @@ def schema_validator_catcher(f):
         except ValidationError as ve:
             return {'res': f"Invalid request! {ve.message}"}, 401
     return wrapper
+
+
+def unwrap_data_from_animal_request(get_request):
+
+    name = str(get_request['name'])
+    center = str(get_request['center'])
+    species = str(get_request['species'])
+    age = str(get_request['age'])
+    price = str(get_request.get('price', None))
+    description = str(get_request.get('description', None))
+
+    return name, center, species, age, price, description

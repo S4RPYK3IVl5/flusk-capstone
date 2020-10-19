@@ -10,7 +10,7 @@ from model.center import Center
 from model.species import Species
 from schemas import request_schemas
 from settings import app
-from utils import schema_validator_catcher, token_required
+from utils import schema_validator_catcher, token_required, unwrap_data_from_animal_request
 
 APPLICATION_JSON = "application/json"
 
@@ -78,16 +78,12 @@ def register_center():
 
 @app.route('/animals', methods=["POST"])
 @token_required
+@schema_validator_catcher
 def register_animal(**kwargs):
 
     get_request = request.get_json()
     jsonschema.validate(get_request, request_schemas.register_update_animal_schema)
-    name = str(get_request['name'])
-    center = str(get_request['center'])
-    species = str(get_request['species'])
-    age = str(get_request['age'])
-    price = str(get_request.get('price', None))
-    description = str(get_request.get('description', None))
+    name, center, species, age, price, description = unwrap_data_from_animal_request(get_request)
 
     try:
         Animals.create_animal(name, center, species, age, price, description)
@@ -99,6 +95,7 @@ def register_animal(**kwargs):
 
 @app.route('/species', methods=["POST"])
 @token_required
+@schema_validator_catcher
 def register_species(**kwargs):
 
     get_request = request.get_json()
@@ -114,16 +111,12 @@ def register_species(**kwargs):
 
 @app.route('/animals/<int:id>', methods=["PUT"])
 @token_required
+@schema_validator_catcher
 def replace_animal(id, **kwargs):
 
     get_request = request.get_json()
     jsonschema.validate(get_request, request_schemas.register_update_animal_schema)
-    name = str(get_request['name'])
-    center = str(get_request['center'])
-    species = str(get_request['species'])
-    age = str(get_request['age'])
-    price = str(get_request.get('price', None))
-    description = str(get_request.get('description', None))
+    name, center, species, age, price, description = unwrap_data_from_animal_request(get_request)
 
     Animals.update_animal(id, name, center, species, description, age, price)
 
