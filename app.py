@@ -11,7 +11,7 @@ from models.center import Center
 from models.species import Species
 from schemas import request_schemas
 from config.settings import app
-from utils import schema_validator_catcher, token_required, unwrap_data_from_animal_request
+from utils import schema_validator_catcher, token_required, unwrap_data_from_animal_request, seng_message_to_log
 
 APPLICATION_JSON = "application/json"
 
@@ -26,8 +26,11 @@ def login_in():
 
     if Center.is_center_exist(login, password):
         expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=60 * 60 * 24)
-        token = jwt.encode({'exp': expiration_date, 'login': login}, app.config['SECRET_KEY'], algorithm="HS256")
+        id_center = str(Center.get_center_by_login(login).id)
+        token = jwt.encode({'exp': expiration_date, 'login': login, 'id': id_center},
+                           app.config['SECRET_KEY'], algorithm="HS256")
         AccessRequest.register_access_request(login, datetime.datetime.now())
+        seng_message_to_log("POST", "/login", id_center, "center", id_center)
         return {'token': token}
     else:
         return {'res': 'Incorrect login or password'}, 401
@@ -73,7 +76,8 @@ def register_center():
     password = str(get_request['password'])
     address = str(get_request['address'])
 
-    Center.create_center(login, password, address)
+    center_id = str(Center.create_center(login, password, address))
+    seng_message_to_log("POST", "/register", center_id, "center", center_id)
 
     return {'res': "Center was successfully registered"}, 200
 
@@ -88,11 +92,12 @@ def register_animal(**kwargs):
     name, center, species, age, price, description = unwrap_data_from_animal_request(get_request)
 
     try:
-        Animals.create_animal(name, center, species, age, price, description)
+        id_animal = Animals.create_animal(name, center, species, age, price, description)
+        seng_message_to_log("POST", "/animals", kwargs['id'], "animal", str(id_animal))
         return {'res': "Animal was created"}, 200
     except Exception:
         traceback.print_exc()
-        return {'res': "No such species {species} exist, please, create it firstly"}, 401
+        return {'res': f"No such species '{species}' exist, please, create it firstly"}, 401
 
 
 @app.route('/species', methods=["POST"])
@@ -106,30 +111,33 @@ def register_species(**kwargs):
     description = str(get_request['description'])
     price = str(get_request['price'])
 
-    Species.create_cpecies(name, description, price)
+    id_species = Species.create_cpecies(name, description, price)
+    seng_message_to_log("POST", "/species", kwargs['id'], "species", str(id_species))
 
     return {'res': "Species was successfully registered"}, 200
 
 
-@app.route('/animals/<int:id>', methods=["PUT"])
+@app.route('/animals/<int:animal_id>', methods=["PUT"])
 @token_required
 @schema_validator_catcher
-def replace_animal(id, **kwargs):
+def replace_animal(animal_id, **kwargs):
 
     get_request = request.get_json()
     jsonschema.validate(get_request, request_schemas.register_update_animal_schema)
     name, center, species, age, price, description = unwrap_data_from_animal_request(get_request)
 
-    Animals.update_animal(id, name, center, species, description, age, price)
+    Animals.update_animal(animal_id, name, center, species, description, age, price)
+    seng_message_to_log("PUT", f"/animals/{animal_id}", kwargs['id'], "animal", str(animal_id))
 
     return {'res': "Animal was successfully updated"}, 200
 
 
-@app.route('/animals/<int:id>', methods=["DELETE"])
+@app.route('/animals/<int:animal_id>', methods=["DELETE"])
 @token_required
-def delete_animal(id, **kwargs):
+def delete_animal(animal_id, **kwargs):
     try:
-        Animals.delete_animal(id, kwargs['login'])
+        Animals.delete_animal(animal_id, kwargs['login'])
+        seng_message_to_log("DELETE", f"/animals/{animal_id}", kwargs['id'], "animal", str(animal_id))
         return {'res': "Animal was deleted"}, 200
     except:
         traceback.print_exc()

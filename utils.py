@@ -18,7 +18,7 @@ def token_required(f):
         except:
             traceback.print_exc()
             return jsonify({'error': "Need a valid token to view this page"}), 401
-        return f(*args, **kwargs, login=payload['login'])
+        return f(*args, **kwargs, login=payload['login'], id=payload['id'])
     return wrapper
 
 
@@ -54,3 +54,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("app")
 logger.setLevel(logging.INFO)
 logger.addHandler(handler)
+
+
+def seng_message_to_log(*args):
+    logger.info(" - ".join(args))

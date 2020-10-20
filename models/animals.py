@@ -27,6 +27,7 @@ class Animals(db.Model):
                              species_id=species_from_db, age=age, price=price, description=description)
         db.session.add(new_animal)
         db.session.commit()
+        return new_animal.id
 
     def get_all_animals():
         return [Animals.json(animal) for animal in Animals.query.all()]
@@ -51,6 +52,7 @@ class Animals(db.Model):
         existing_animal.price = price
 
         db.session.commit()
+        return existing_animal.id
 
     def delete_animal(id, center_login):
         on_delete = Animals.query.filter_by(id=id).first()

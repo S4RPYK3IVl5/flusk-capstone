@@ -14,6 +14,7 @@ class Species(db.Model):
         new_species = Species(name=name, description=description, price=price)
         db.session.add(new_species)
         db.session.commit()
+        return new_species.id
 
     def get_all_species():
         species = Species.query.all()
