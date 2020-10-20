@@ -1,9 +1,10 @@
 import traceback
 from functools import wraps
-from config.settings import app
+from config.settings import app, PATH_TO_LOG_FILE
 import jwt
 from flask import request, jsonify
 from jsonschema import ValidationError
+import logging
 
 
 def token_required(f):
@@ -42,3 +43,14 @@ def unwrap_data_from_animal_request(get_request):
     description = str(get_request.get('description', None))
 
     return name, center, species, age, price, description
+
+
+formatter = logging.Formatter("%(asctime)s - %(message)s")
+
+handler = logging.FileHandler(PATH_TO_LOG_FILE, mode="a", encoding="UTF-8")
+handler.setLevel(logging.INFO)
+handler.setFormatter(formatter)
+
+logger = logging.getLogger("app")
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
