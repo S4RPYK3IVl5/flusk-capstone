@@ -11,13 +11,14 @@ from models.center import Center
 from models.species import Species
 from schemas import request_schemas
 from config.settings import app
-from utils import schema_validator_catcher, token_required, unwrap_data_from_animal_request, seng_message_to_log
+from utils import requests_handler, token_required, unwrap_data_from_animal_request, send_message_to_log, \
+    NoAccessException, SpeciesDoesNotExistException
 
 APPLICATION_JSON = "application/json"
 
 
 @app.route("/login", methods=["POST"])
-@schema_validator_catcher
+@requests_handler
 def login_in():
     get_request = request.get_json()
     jsonschema.validate(get_request, request_schemas.login_center_schema)
@@ -30,44 +31,50 @@ def login_in():
         token = jwt.encode({'exp': expiration_date, 'login': login, 'id': id_center},
                            app.config['SECRET_KEY'], algorithm="HS256")
         AccessRequest.register_access_request(login, datetime.datetime.now())
-        seng_message_to_log("POST", "/login", id_center, "center", id_center)
+        send_message_to_log("POST", "/login", id_center, "center", id_center)
         return {'token': token}
     else:
         return {'res': 'Incorrect login or password'}, 401
 
 
 @app.route('/animals', methods=["GET"])
+@requests_handler
 def get_all_animals():
     return {'animals': Animals.get_all_animals()}, 200
 
 
 @app.route('/animals/<int:id>', methods=["GET"])
+@requests_handler
 def get_certain_animal(id):
     return {'animal': Animals.get_certain_animal(id)}, 200
 
 
 @app.route('/centers', methods=["GET"])
+@requests_handler
 def get_all_centers():
     return {"centers": Center.get_all_centers()}, 200
 
 
 @app.route('/centers/<int:id>', methods=["GET"])
+@requests_handler
 def get_certain_center(id):
     return {"center": Center.get_certain_center(id)}, 200
 
 
 @app.route('/species', methods=["GET"])
+@requests_handler
 def get_all_species():
     return {'species': Species.get_all_species()}, 200
 
 
 @app.route('/species/<int:id>', methods=["GET"])
+@requests_handler
 def get_concrete_species(id):
     return {'specie': Species.get_concrete_species_by_id(id)}, 200
 
 
 @app.route('/register', methods=["POST"])
-@schema_validator_catcher
+@requests_handler
 def register_center():
 
     get_request = request.get_json()
@@ -77,14 +84,14 @@ def register_center():
     address = str(get_request['address'])
 
     center_id = str(Center.create_center(login, password, address))
-    seng_message_to_log("POST", "/register", center_id, "center", center_id)
+    send_message_to_log("POST", "/register", center_id, "center", center_id)
 
     return {'res': "Center was successfully registered"}, 200
 
 
 @app.route('/animals', methods=["POST"])
 @token_required
-@schema_validator_catcher
+@requests_handler
 def register_animal(**kwargs):
 
     get_request = request.get_json()
@@ -93,16 +100,16 @@ def register_animal(**kwargs):
 
     try:
         id_animal = Animals.create_animal(name, center, species, age, price, description)
-        seng_message_to_log("POST", "/animals", kwargs['id'], "animal", str(id_animal))
+        send_message_to_log("POST", "/animals", kwargs['id'], "animal", str(id_animal))
         return {'res': "Animal was created"}, 200
-    except Exception:
+    except SpeciesDoesNotExistException:
         traceback.print_exc()
         return {'res': f"No such species '{species}' exist, please, create it firstly"}, 401
 
 
 @app.route('/species', methods=["POST"])
 @token_required
-@schema_validator_catcher
+@requests_handler
 def register_species(**kwargs):
 
     get_request = request.get_json()
@@ -112,14 +119,14 @@ def register_species(**kwargs):
     price = str(get_request['price'])
 
     id_species = Species.create_cpecies(name, description, price)
-    seng_message_to_log("POST", "/species", kwargs['id'], "species", str(id_species))
+    send_message_to_log("POST", "/species", kwargs['id'], "species", str(id_species))
 
     return {'res': "Species was successfully registered"}, 200
 
 
 @app.route('/animals/<int:animal_id>', methods=["PUT"])
 @token_required
-@schema_validator_catcher
+@requests_handler
 def replace_animal(animal_id, **kwargs):
 
     get_request = request.get_json()
@@ -127,19 +134,20 @@ def replace_animal(animal_id, **kwargs):
     name, center, species, age, price, description = unwrap_data_from_animal_request(get_request)
 
     Animals.update_animal(animal_id, name, center, species, description, age, price)
-    seng_message_to_log("PUT", f"/animals/{animal_id}", kwargs['id'], "animal", str(animal_id))
+    send_message_to_log("PUT", f"/animals/{animal_id}", kwargs['id'], "animal", str(animal_id))
 
     return {'res': "Animal was successfully updated"}, 200
 
 
 @app.route('/animals/<int:animal_id>', methods=["DELETE"])
 @token_required
+@requests_handler
 def delete_animal(animal_id, **kwargs):
     try:
         Animals.delete_animal(animal_id, kwargs['login'])
-        seng_message_to_log("DELETE", f"/animals/{animal_id}", kwargs['id'], "animal", str(animal_id))
+        send_message_to_log("DELETE", f"/animals/{animal_id}", kwargs['id'], "animal", str(animal_id))
         return {'res': "Animal was deleted"}, 200
-    except:
+    except NoAccessException:
         traceback.print_exc()
         return {'res': "This center is not owner of this animal"}, 400
 

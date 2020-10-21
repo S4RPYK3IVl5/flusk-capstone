@@ -5,6 +5,15 @@ import jwt
 from flask import request, jsonify
 from jsonschema import ValidationError
 import logging
+from flask import request
+
+
+class NoAccessException(Exception):
+    pass
+
+
+class SpeciesDoesNotExistException(Exception):
+    pass
 
 
 def token_required(f):
@@ -22,14 +31,18 @@ def token_required(f):
     return wrapper
 
 
-def schema_validator_catcher(f):
+def requests_handler(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         try:
             res = f(*args, **kwargs)
             return res
         except ValidationError as ve:
+            send_error_to_log(request.base_url, request.method, ve.message)
             return {'res': f"Invalid request! {ve.message}"}, 401
+        except Exception as ex:
+            send_error_to_log(request.base_url, request.method, str(ex))
+            return {'res': f"Exception had been occurred: {str(ex)}"}
     return wrapper
 
 
@@ -56,5 +69,9 @@ logger.setLevel(logging.INFO)
 logger.addHandler(handler)
 
 
-def seng_message_to_log(*args):
+def send_message_to_log(*args):
     logger.info(" - ".join(args))
+
+
+def send_error_to_log(*args):
+    logger.error(" - ".join(args))

@@ -1,6 +1,7 @@
 from models.center import Center
 from models.species import Species
 from config.settings import db
+from utils import NoAccessException, SpeciesDoesNotExistException
 
 
 class Animals(db.Model):
@@ -22,7 +23,7 @@ class Animals(db.Model):
         center_from_db = Center.get_center_by_login(center).id
         species_from_db = Species.get_concrete_species_by_name(species_name).id
         if not species_from_db:
-            raise Exception()
+            raise SpeciesDoesNotExistException()
         new_animal = Animals(name=name, center_id=center_from_db,
                              species_id=species_from_db, age=age, price=price, description=description)
         db.session.add(new_animal)
@@ -60,4 +61,4 @@ class Animals(db.Model):
             db.session.delete(on_delete)
             db.session.commit()
         else:
-            raise Exception()
+            raise NoAccessException()
