@@ -1,5 +1,5 @@
-from config.settings import db
-from models.center import Center
+from flask_app.config.settings import db
+from flask_app.models.center import Center
 
 
 class AccessRequest(db.Model):

@@ -1,4 +1,4 @@
-from config.settings import db
+from flask_app.config.settings import db
 
 
 class Center(db.Model):

@@ -5,13 +5,13 @@ import jsonschema
 import jwt
 from flask import request
 
-from models.access_request import AccessRequest
-from models.animals import Animals
-from models.center import Center
-from models.species import Species
-from schemas import request_schemas
-from config.settings import app
-from utils import requests_handler, token_required, unwrap_data_from_animal_request, send_message_to_log, \
+from flask_app.models.access_request import AccessRequest
+from flask_app.models.animals import Animals
+from flask_app.models.center import Center
+from flask_app.models.species import Species
+from flask_app.schemas import request_schemas
+from flask_app.config.settings import app
+from flask_app.utils import requests_handler, token_required, unwrap_data_from_animal_request, send_message_to_log, \
     NoAccessException, SpeciesDoesNotExistException
 
 APPLICATION_JSON = "application/json"
@@ -32,7 +32,7 @@ def login_in():
                            app.config['SECRET_KEY'], algorithm="HS256")
         AccessRequest.register_access_request(login, datetime.datetime.now())
         send_message_to_log("POST", "/login", id_center, "center", id_center)
-        return {'token': token}
+        return {'token': token}, 200
     else:
         return {'res': 'Incorrect login or password'}, 401
 

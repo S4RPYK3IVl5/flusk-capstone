@@ -1,7 +1,7 @@
-from models.center import Center
-from models.species import Species
-from config.settings import db
-from utils import NoAccessException, SpeciesDoesNotExistException
+from flask_app.models.center import Center
+from flask_app.models.species import Species
+from flask_app.config.settings import db
+from flask_app.utils import NoAccessException, SpeciesDoesNotExistException
 
 
 class Animals(db.Model):

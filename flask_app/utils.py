@@ -1,8 +1,8 @@
 import traceback
 from functools import wraps
-from config.settings import app, PATH_TO_LOG_FILE
+from flask_app.config.settings import app, PATH_TO_LOG_FILE
 import jwt
-from flask import request, jsonify
+from flask import jsonify
 from jsonschema import ValidationError
 import logging
 from flask import request
@@ -42,7 +42,7 @@ def requests_handler(f):
             return {'res': f"Invalid request! {ve.message}"}, 401
         except Exception as ex:
             send_error_to_log(request.base_url, request.method, str(ex))
-            return {'res': f"Exception had been occurred: {str(ex)}"}
+            return {'res': f"Exception had been occurred: {str(ex)}"}, 401
     return wrapper
 
 
