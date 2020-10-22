@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 parser = ConfigParser()
-parser.read("./config/config.ini")
+parser.read("/Users/asaprykin/Documents/projects/flask_capstone/flask_app/config/config.ini")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = parser.get("app_setting", "SQLALCHEMY_DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = parser.get("app_setting", "SQLALCHEMY_TRACK_MODIFICATIONS") == "True"
