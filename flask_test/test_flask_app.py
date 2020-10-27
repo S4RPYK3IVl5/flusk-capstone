@@ -1,14 +1,20 @@
+import json
 import os
 import tempfile
-from flask_app.config.settings import app, db
+
+from flask.wrappers import Response
+
+from flask_app.app import app
+from flask_app.config.settings import db
 
 import pytest
 
 
 @pytest.fixture
 def client():
-    db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-    app.config['TESTING'] = True
+    db_fd, temp_url = tempfile.mkstemp()
+    temp_url_with_db = temp_url + ".db"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + temp_url_with_db
 
     with app.test_client() as client:
         with app.app_context():
@@ -16,20 +22,11 @@ def client():
         yield client
 
     os.close(db_fd)
-    os.unlink(app.config['DATABASE'])
+    os.unlink(temp_url_with_db)
 
 
 def test_empty_bd(client):
-    res = client.get('/animals')
-    print(res.data)
-    assert "Center was successfully registered" == res.data
-
-
-# def test_register_functionality(client):
-#     res = client.post('/register', data=dict(
-#         login="Super puper center 2",
-#         password="1",
-#         address="magic address 1"
-#     ))
-#     print(res.data)
-#     assert "Center was successfully registered" == res.data
+    res: Response = client.get('/animals')
+    assert "200 OK" == res.status
+    assert b"animals" in res.data
+    assert len(json.loads(res.data)['animals']) == 0
