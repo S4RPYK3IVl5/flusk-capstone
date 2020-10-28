@@ -19,7 +19,7 @@ class SpeciesDoesNotExistException(Exception):
 def token_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        token = request.get_json().get('token')
+        token = request.form.get('token')
         if not token:
             return {"error": "Toke is required"}, 401
         try:

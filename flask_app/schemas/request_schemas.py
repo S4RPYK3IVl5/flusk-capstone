@@ -23,8 +23,8 @@ register_update_animal_schema = {
         "name": {"type": "string"},
         "center": {"type": "string"},
         "species": {"type": "string"},
-        "age": {"type": "integer"},
-        "price": {"type": "integer"},
+        "age": {"type": "string"},
+        "price": {"type": "string"},
         "description": {"type": "string"}
     },
     "required": ["name", "center", "species", "age"]
@@ -35,7 +35,7 @@ register_species_schema = {
     "properties": {
         "name": {"type": "string"},
         "description": {"type": "string"},
-        "price": {"type": "integer"}
+        "price": {"type": "string"}
     },
     "required": ["name", "description", "price"]
 }

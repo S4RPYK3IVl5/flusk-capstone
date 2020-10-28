@@ -20,7 +20,7 @@ APPLICATION_JSON = "application/json"
 @app.route("/login", methods=["POST"])
 @requests_handler
 def login_in():
-    get_request = request.get_json()
+    get_request = request.form
     jsonschema.validate(get_request, request_schemas.login_center_schema)
     login = str(get_request['login'])
     password = str(get_request['password'])
@@ -77,7 +77,7 @@ def get_concrete_species(id):
 @requests_handler
 def register_center():
 
-    get_request = request.get_json()
+    get_request = request.form
     jsonschema.validate(get_request, request_schemas.register_center_schema)
     login = str(get_request['login'])
     password = str(get_request['password'])
@@ -94,7 +94,7 @@ def register_center():
 @requests_handler
 def register_animal(**kwargs):
 
-    get_request = request.get_json()
+    get_request = request.form
     jsonschema.validate(get_request, request_schemas.register_update_animal_schema)
     name, center, species, age, price, description = unwrap_data_from_animal_request(get_request)
 
@@ -112,7 +112,7 @@ def register_animal(**kwargs):
 @requests_handler
 def register_species(**kwargs):
 
-    get_request = request.get_json()
+    get_request = request.form
     jsonschema.validate(get_request, request_schemas.register_species_schema)
     name = str(get_request['name'])
     description = str(get_request['description'])
@@ -129,7 +129,7 @@ def register_species(**kwargs):
 @requests_handler
 def replace_animal(animal_id, **kwargs):
 
-    get_request = request.get_json()
+    get_request = request.form
     jsonschema.validate(get_request, request_schemas.register_update_animal_schema)
     name, center, species, age, price, description = unwrap_data_from_animal_request(get_request)
 
