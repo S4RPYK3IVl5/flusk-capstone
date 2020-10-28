@@ -22,8 +22,8 @@ APPLICATION_JSON = "application/json"
 def login_in():
     get_request = request.form
     jsonschema.validate(get_request, request_schemas.login_center_schema)
-    login = str(get_request['login'])
-    password = str(get_request['password'])
+    login = get_request['login']
+    password = get_request['password']
 
     if Center.is_center_exist(login, password):
         expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=60 * 60 * 24)
@@ -79,9 +79,9 @@ def register_center():
 
     get_request = request.form
     jsonschema.validate(get_request, request_schemas.register_center_schema)
-    login = str(get_request['login'])
-    password = str(get_request['password'])
-    address = str(get_request['address'])
+    login = get_request['login']
+    password = get_request['password']
+    address = get_request['address']
 
     center_id = str(Center.create_center(login, password, address))
     send_message_to_log("POST", "/register", center_id, "center", center_id)
@@ -114,9 +114,9 @@ def register_species(**kwargs):
 
     get_request = request.form
     jsonschema.validate(get_request, request_schemas.register_species_schema)
-    name = str(get_request['name'])
-    description = str(get_request['description'])
-    price = str(get_request['price'])
+    name = get_request['name']
+    description = get_request['description']
+    price = get_request['price']
 
     id_species = Species.create_cpecies(name, description, price)
     send_message_to_log("POST", "/species", kwargs['id'], "species", str(id_species))

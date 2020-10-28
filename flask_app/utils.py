@@ -48,12 +48,12 @@ def requests_handler(f):
 
 def unwrap_data_from_animal_request(get_request):
 
-    name = str(get_request['name'])
-    center = str(get_request['center'])
-    species = str(get_request['species'])
-    age = str(get_request['age'])
-    price = str(get_request.get('price', None))
-    description = str(get_request.get('description', None))
+    name = get_request['name']
+    center = get_request['center']
+    species = get_request['species']
+    age = get_request['age']
+    price = get_request.get('price', None)
+    description = get_request.get('description', None)
 
     return name, center, species, age, price, description
 
