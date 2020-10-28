@@ -17,11 +17,19 @@ class SpeciesDoesNotExistException(Exception):
 
 
 def token_required(f):
+    """
+    Wrapper for those request handlers, which needed to be secured by jwt token
+    :param f:
+        Function, by another word, it is a handler for specific HTTP request
+    :return:
+        :type object
+            A wrapper function
+    """
     @wraps(f)
     def wrapper(*args, **kwargs):
         token = request.form.get('token')
         if not token:
-            return {"error": "Toke is required"}, 401
+            return {"error": "Token is required"}, 401
         try:
             payload = jwt.decode(token, app.config['SECRET_KEY'])
         except:
@@ -32,6 +40,14 @@ def token_required(f):
 
 
 def requests_handler(f):
+    """
+    Wrapper for function, which needed to be handled in case of some Error occurrence
+    :param f:
+        Function, by another word, it is a handler for specific Error
+    :return:
+        :type object
+            A wrapper function
+    """
     @wraps(f)
     def wrapper(*args, **kwargs):
         try:
@@ -47,7 +63,14 @@ def requests_handler(f):
 
 
 def unwrap_data_from_animal_request(get_request):
-
+    """
+    Unwrap animal data from API request
+    :param get_request:
+        Dictionary of animal data from API request
+    :return:
+        :type tuple
+            A tuple of parameters to create animals
+    """
     name = get_request['name']
     center = get_request['center']
     species = get_request['species']
@@ -70,8 +93,18 @@ logger.addHandler(handler)
 
 
 def send_message_to_log(*args):
+    """
+    Log information to file
+    :param args:
+        Argument to log them
+    """
     logger.info(" - ".join(args))
 
 
 def send_error_to_log(*args):
+    """
+    Log errors to file
+    :param args:
+        Argument to log them
+    """
     logger.error(" - ".join(args))

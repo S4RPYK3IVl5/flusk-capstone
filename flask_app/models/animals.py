@@ -5,7 +5,9 @@ from flask_app.utils import NoAccessException, SpeciesDoesNotExistException
 
 
 class Animals(db.Model):
-
+    """
+    The Animals model used for operating with 'animal' table in database
+    """
     __tablename__ = 'animals'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
@@ -16,10 +18,40 @@ class Animals(db.Model):
     price = db.Column(db.Integer, nullable=True)
 
     def json(self):
+        """
+        This function creates dict of animal instance for representation
+        :return:
+            :type dict
+                The representation of animal
+        """
         return {'id': self.id, 'name': self.name, 'center_id': self.center_id, 'species': self.species_id,
                 'description': self.description, 'age': self.age, 'price': self.price}
 
     def create_animal(name, center, species_name, age, price=None, description=None):
+        """
+        Create animal instance to save it in db
+        :param name:
+            :type str
+                Name of animal
+        :param center:
+            :type str
+                Login of center
+        :param species_name:
+            :type str
+                Name of specie
+        :param age:
+            :type str
+                Age of animal
+        :param price:
+            :type str
+                Price of animal
+        :param description:
+            :type str
+                Description of animal
+        :return:
+            :type int
+                The id of created animal
+        """
         center_from_db = Center.get_center_by_login(center).id
         species_from_db = Species.get_concrete_species_by_name(species_name).id
         if not species_from_db:
@@ -31,18 +63,78 @@ class Animals(db.Model):
         return new_animal.id
 
     def get_all_animals():
+        """
+        Return all Animals, stored in db
+        :return:
+            :type list
+                The list of all stored Animals
+        """
         return [Animals.json(animal) for animal in Animals.query.all()]
 
     def get_certain_animal(id):
+        """
+        Return a certain Animal by id
+        :param id:
+            :type int
+                The id of Animal
+        :return:
+            :type Animals
+                The instance of Animal
+        """
         return Animals.json(Animals.query.filter_by(id=id).first())
 
     def get_all_animals_from_center(center_id):
+        """
+        Return all animals from specific center
+        :param center_id:
+            :type int
+                The id of center
+        :return:
+            :type list
+                The list of all animals from specific center
+        """
         return [Animals.json(animal) for animal in Animals.query.filter_by(center_id=center_id)]
 
     def get_all_animals_with_species(species_id):
+        """
+        Return all animals by specific specie
+        :param species_id:
+            :type int
+                The id of specie
+        :return:
+            :type list
+                The list of all animals by specific specie
+        """
         return [Animals.json(animal) for animal in Animals.query.filter_by(species_id=species_id)]
 
     def update_animal(id, name, center_login, species_name, description, age, price):
+        """
+        Update animal by specific id
+        :param id:
+            :type int
+                Name of animal
+        :param name:
+            :type str
+                Name of animal
+        :param center:
+            :type str
+                Login of center
+        :param species_name:
+            :type str
+                Name of specie
+        :param age:
+            :type str
+                Age of animal
+        :param price:
+            :type str
+                Price of animal
+        :param description:
+            :type str
+                Description of animal
+        :return:
+            :type int
+                The id of updated animal
+        """
         existing_animal = Animals.query.filter_by(id=id).first()
 
         existing_animal.name = name
@@ -56,6 +148,15 @@ class Animals(db.Model):
         return existing_animal.id
 
     def delete_animal(id, center_login):
+        """
+        Delete animal from DB
+        :param id:
+            :type int:
+                The id of animal
+        :param center_login:
+            :type str
+                The login of center
+        """
         on_delete = Animals.query.filter_by(id=id).first()
         if on_delete.center_id == Center.get_center_by_login(center_login).id:
             db.session.delete(on_delete)
