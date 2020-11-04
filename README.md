@@ -12,5 +12,5 @@ To run this program you have to go through following steps:
 
 ## Unit test
 
-In order to run unittest, write **pytest** command to the console from **flask_capstone** package
+In order to run unittest, write **pytest** command to the console from **flask_app** package
 ![image](https://i.ibb.co/DYK4TNL/1.png)

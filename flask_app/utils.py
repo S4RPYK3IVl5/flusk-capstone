@@ -92,19 +92,31 @@ logger.setLevel(logging.INFO)
 logger.addHandler(handler)
 
 
-def send_message_to_log(*args):
+def send_message_to_log(method, path, center_id, changed_entity, changed_id):
     """
     Log information to file
-    :param args:
-        Argument to log them
+    :param method:
+        Request method parameter. Ex: POST, GET and etc.
+    :param path:
+        Request URL path.
+    :param center_id:
+        Center, performed request
+    :param changed_entity:
+        Changed entity, during the request.
+    :param changed_id:
+        Id of the changed entity.
     """
-    logger.info(" - ".join(args))
+    logger.info("%s - %s - %s - %s - %s", method, path, center_id, changed_entity, changed_id)
 
 
-def send_error_to_log(*args):
+def send_error_to_log(url, method, message):
     """
     Log errors to file
-    :param args:
-        Argument to log them
+    :param url:
+        Request URL path.
+    :param method:
+        Request method parameter. Ex: POST, GET and etc.
+    :param message:
+        Error message.
     """
-    logger.error(" - ".join(args))
+    logger.error("%s - %s - %s", url, method, message)
