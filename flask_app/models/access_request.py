@@ -12,17 +12,6 @@ class AccessRequest(db.Model):
     center_id = db.Column(db.Integer, db.ForeignKey('center.id'))
     timestamp = db.Column(db.DateTime, nullable=False)
 
-    def add_record(center_id, timestamp):
-        """
-        Save AccessRequest record to DB with center id
-        :param timestamp:
-            Time, when access have been requested
-        :return:
-        """
-        new_record = AccessRequest(center_id=center_id, timestamp=timestamp)
-        db.session.add(new_record)
-        db.session.commit()
-
     def register_access_request(center_login, timestamp):
         """
         Save AccessRequest record to DB

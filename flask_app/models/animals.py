@@ -83,30 +83,6 @@ class Animals(db.Model):
         """
         return Animals.json(Animals.query.filter_by(id=id).first())
 
-    def get_all_animals_from_center(center_id):
-        """
-        Return all animals from specific center
-        :param center_id:
-            :type int
-                The id of center
-        :return:
-            :type list
-                The list of all animals from specific center
-        """
-        return [Animals.json(animal) for animal in Animals.query.filter_by(center_id=center_id)]
-
-    def get_all_animals_with_species(species_id):
-        """
-        Return all animals by specific specie
-        :param species_id:
-            :type int
-                The id of specie
-        :return:
-            :type list
-                The list of all animals by specific specie
-        """
-        return [Animals.json(animal) for animal in Animals.query.filter_by(species_id=species_id)]
-
     def update_animal(id, name, center_login, species_name, description, age, price):
         """
         Update animal by specific id
