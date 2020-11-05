@@ -24,4 +24,3 @@ class AccessRequest(db.Model):
         center_from_db_id = Center.get_center_by_login(center_login).id
         new_access_request = AccessRequest(center_id=center_from_db_id, timestamp=timestamp)
         db.session.add(new_access_request)
-        db.session.commit()

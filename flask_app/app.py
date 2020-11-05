@@ -10,7 +10,7 @@ from flask_app.models.animals import Animals
 from flask_app.models.center import Center
 from flask_app.models.species import Species
 from flask_app.schemas import request_schemas
-from flask_app.config.settings import app
+from flask_app.config.settings import app, db
 from flask_app.utils import requests_handler, token_required, unwrap_data_from_animal_request, send_message_to_log, \
     NoAccessException, SpeciesDoesNotExistException
 
@@ -41,6 +41,7 @@ def login_in():
         token = jwt.encode({'exp': expiration_date, 'login': login, 'id': id_center},
                            app.config['SECRET_KEY'], algorithm="HS256")
         AccessRequest.register_access_request(login, datetime.datetime.now())
+        db.session.commit()
         send_message_to_log("POST", "/login", id_center, "center", id_center)
         return {'token': token}, 200
     else:
@@ -164,6 +165,7 @@ def register_center():
     address = get_request['address']
 
     center_id = str(Center.create_center(login, password, address))
+    db.session.commit()
     send_message_to_log("POST", "/register", center_id, "center", center_id)
 
     return {'res': "Center was successfully registered"}, 200
@@ -190,6 +192,7 @@ def register_animal(**kwargs):
     try:
         id_animal = Animals.create_animal(name, center, species, age, price, description)
         send_message_to_log("POST", "/animals", kwargs['id'], "animal", str(id_animal))
+        db.session.commit()
         return {'res': "Animal was created"}, 200
     except SpeciesDoesNotExistException:
         traceback.print_exc()
@@ -215,6 +218,7 @@ def register_species(**kwargs):
     price = get_request['price']
 
     id_species = Species.create_species(name, description, price)
+    db.session.commit()
     send_message_to_log("POST", "/species", kwargs['id'], "species", str(id_species))
 
     return {'res': "Species was successfully registered"}, 200
@@ -242,6 +246,7 @@ def replace_animal(animal_id, **kwargs):
     name, center, species, age, price, description = unwrap_data_from_animal_request(get_request)
 
     Animals.update_animal(animal_id, name, center, species, description, age, price)
+    db.session.commit()
     send_message_to_log("PUT", f"/animals/{animal_id}", kwargs['id'], "animal", str(animal_id))
 
     return {'res': "Animal was successfully updated"}, 200
@@ -268,6 +273,7 @@ def delete_animal(animal_id, **kwargs):
     """
     try:
         Animals.delete_animal(animal_id, kwargs['login'])
+        db.session.commit()
         send_message_to_log("DELETE", f"/animals/{animal_id}", kwargs['id'], "animal", str(animal_id))
         return {'res': "Animal was deleted"}, 200
     except NoAccessException:

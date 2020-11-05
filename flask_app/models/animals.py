@@ -59,7 +59,6 @@ class Animals(db.Model):
         new_animal = Animals(name=name, center_id=center_from_db,
                              species_id=species_from_db, age=age, price=price, description=description)
         db.session.add(new_animal)
-        db.session.commit()
         return new_animal.id
 
     def get_all_animals():
@@ -120,7 +119,6 @@ class Animals(db.Model):
         existing_animal.age = age
         existing_animal.price = price
 
-        db.session.commit()
         return existing_animal.id
 
     def delete_animal(id, center_login):
@@ -136,6 +134,5 @@ class Animals(db.Model):
         on_delete = Animals.query.filter_by(id=id).first()
         if on_delete.center_id == Center.get_center_by_login(center_login).id:
             db.session.delete(on_delete)
-            db.session.commit()
         else:
             raise NoAccessException()
