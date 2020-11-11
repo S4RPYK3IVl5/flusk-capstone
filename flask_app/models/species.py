@@ -10,7 +10,8 @@ class Species(db.Model):
     price = db.Column(db.Integer, nullable=False)
     animals = db.relationship("Animals")
 
-    def create_species(name, description, price):
+    @classmethod
+    def create_species(cls, name, description, price):
         """
         Create Species instance and save it to db
         :param name:
@@ -30,7 +31,8 @@ class Species(db.Model):
         db.session.add(new_species)
         return new_species.id
 
-    def get_all_species():
+    @classmethod
+    def get_all_species(cls):
         """
         Return all Species, stored in db
         :return:
@@ -40,7 +42,8 @@ class Species(db.Model):
         species = Species.query.all()
         return [f"{data.id} - {data.name} - {len(data.animals)}" for data in species]
 
-    def get_concrete_species_by_id(id):
+    @classmethod
+    def get_concrete_species_by_id(cls, id):
         """
         Return specific Species by id
         :param id:
@@ -53,7 +56,8 @@ class Species(db.Model):
         specie = Species.query.filter_by(id=id).first()
         return f"{specie.name} - {len(specie.animals)}"
 
-    def get_concrete_species_by_name(name):
+    @classmethod
+    def get_concrete_species_by_name(cls, name):
         """
         Return specific Species by name
         :param name:

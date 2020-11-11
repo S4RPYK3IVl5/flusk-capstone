@@ -12,7 +12,8 @@ class AccessRequest(db.Model):
     center_id = db.Column(db.Integer, db.ForeignKey('center.id'))
     timestamp = db.Column(db.DateTime, nullable=False)
 
-    def register_access_request(center_login, timestamp):
+    @classmethod
+    def register_access_request(cls, center_login, timestamp):
         """
         Save AccessRequest record to DB
         :param center_login:

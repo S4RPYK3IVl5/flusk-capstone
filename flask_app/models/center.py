@@ -22,7 +22,8 @@ class Center(db.Model):
         """
         return f"{self.login} - {self.id}"
 
-    def create_center(login, password, address):
+    @classmethod
+    def create_center(cls, login, password, address):
         """
         Create and save Center instance to db
         :param login:
@@ -42,7 +43,8 @@ class Center(db.Model):
         db.session.add(new_center)
         return new_center.id
 
-    def is_center_exist(login, password):
+    @classmethod
+    def is_center_exist(cls, login, password):
         """
         Check for the presence of the center
         :param login:
@@ -61,7 +63,8 @@ class Center(db.Model):
         else:
             return False
 
-    def get_all_centers():
+    @classmethod
+    def get_all_centers(cls):
         """
         Return all Center, stored in db
         :return:
@@ -70,7 +73,8 @@ class Center(db.Model):
         """
         return [Center._format_model(center) for center in Center.query.all()]
 
-    def get_center_by_login(login):
+    @classmethod
+    def get_center_by_login(cls, login):
         """
         Return a certain Center by login
         :param login:
@@ -83,7 +87,8 @@ class Center(db.Model):
         center = Center.query.filter_by(login=login).first()
         return center
 
-    def get_certain_center(id):
+    @classmethod
+    def get_certain_center(cls, id):
         """
         Return a certain Center by id
         :param id:

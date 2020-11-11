@@ -27,7 +27,8 @@ class Animals(db.Model):
         return {'id': self.id, 'name': self.name, 'center_id': self.center_id, 'species': self.species_id,
                 'description': self.description, 'age': self.age, 'price': self.price}
 
-    def create_animal(name, center, species_name, age, price=None, description=None):
+    @classmethod
+    def create_animal(cls, name, center, species_name, age, price=None, description=None):
         """
         Create animal instance to save it in db
         :param name:
@@ -61,7 +62,8 @@ class Animals(db.Model):
         db.session.add(new_animal)
         return new_animal.id
 
-    def get_all_animals():
+    @classmethod
+    def get_all_animals(cls):
         """
         Return all Animals, stored in db
         :return:
@@ -70,7 +72,8 @@ class Animals(db.Model):
         """
         return [Animals.json(animal) for animal in Animals.query.all()]
 
-    def get_certain_animal(id):
+    @classmethod
+    def get_certain_animal(cls, id):
         """
         Return a certain Animal by id
         :param id:
@@ -82,7 +85,8 @@ class Animals(db.Model):
         """
         return Animals.json(Animals.query.filter_by(id=id).first())
 
-    def update_animal(id, name, center_login, species_name, description, age, price):
+    @classmethod
+    def update_animal(cls, id, name, center_login, species_name, description, age, price):
         """
         Update animal by specific id
         :param id:
@@ -91,7 +95,7 @@ class Animals(db.Model):
         :param name:
             :type str
                 Name of animal
-        :param center:
+        :param center_login:
             :type str
                 Login of center
         :param species_name:
@@ -121,7 +125,8 @@ class Animals(db.Model):
 
         return existing_animal.id
 
-    def delete_animal(id, center_login):
+    @classmethod
+    def delete_animal(cls, id, center_login):
         """
         Delete animal from DB
         :param id:
