@@ -67,6 +67,7 @@ def requests_handler(f):
     def wrapper(*args, **kwargs):
         try:
             res = f(*args, **kwargs)
+            send_message_to_log(request.base_url, request.method, kwargs.get('id'))
             return res
         except ValidationError as ve:
             send_error_to_log(request.base_url, request.method, ve.message)
@@ -96,7 +97,7 @@ def unwrap_data_from_animal_request(get_request):
     return name, center, species, age, price, description
 
 
-def send_message_to_log(method, path, center_id, changed_entity, changed_id):
+def send_message_to_log(method, path, center_id):
     """
     Log information to file
     :param method:
@@ -105,12 +106,8 @@ def send_message_to_log(method, path, center_id, changed_entity, changed_id):
         Request URL path.
     :param center_id:
         Center, performed request
-    :param changed_entity:
-        Changed entity, during the request.
-    :param changed_id:
-        Id of the changed entity.
     """
-    logger.info("%s - %s - %s - %s - %s", method, path, center_id, changed_entity, changed_id)
+    logger.info("%s - %s - %s", method, path, center_id)
 
 
 def send_error_to_log(url, method, message):

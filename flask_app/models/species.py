@@ -30,7 +30,6 @@ class Species(db.Model):
         """
         new_species = Species(name=name, description=description, price=price)
         db.session.add(new_species)
-        return new_species.id
 
     @classmethod
     def get_all_species(cls):

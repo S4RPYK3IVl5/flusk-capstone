@@ -42,7 +42,6 @@ class Center(db.Model):
         """
         new_center = Center(login=login, password=password, address=address)
         db.session.add(new_center)
-        return new_center.id
 
     @classmethod
     def is_center_exist(cls, login, password):

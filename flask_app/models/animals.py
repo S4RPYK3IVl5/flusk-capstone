@@ -58,7 +58,6 @@ class Animals(db.Model):
         new_animal = Animals(name=name, center_id=center_from_db,
                              species_id=species_from_db, age=age, price=price, description=description)
         db.session.add(new_animal)
-        return new_animal.id
 
     @classmethod
     def get_all_animals(cls):
