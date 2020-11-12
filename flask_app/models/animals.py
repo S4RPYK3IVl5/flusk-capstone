@@ -1,7 +1,7 @@
 from flask_app.models.center import Center
 from flask_app.models.species import Species
 from flask_app.config.settings import db
-from flask_app.utils import NoAccessException, SpeciesDoesNotExistException
+from flask_app.utils import NoAccessException
 
 
 class Animals(db.Model):
@@ -55,8 +55,6 @@ class Animals(db.Model):
         """
         center_from_db = Center.get_center_by_login(center).id
         species_from_db = Species.get_concrete_species_by_name(species_name).id
-        if not species_from_db:
-            raise SpeciesDoesNotExistException()
         new_animal = Animals(name=name, center_id=center_from_db,
                              species_id=species_from_db, age=age, price=price, description=description)
         db.session.add(new_animal)
@@ -86,7 +84,7 @@ class Animals(db.Model):
         return Animals.json(Animals.query.filter_by(id=id).first())
 
     @classmethod
-    def update_animal(cls, id, name, center_login, species_name, description, age, price):
+    def update_animal(cls, id, name, center_id, species_name, description, age, price):
         """
         Update animal by specific id
         :param id:
@@ -114,10 +112,10 @@ class Animals(db.Model):
             :type int
                 The id of updated animal
         """
-        existing_animal = Animals.query.filter_by(id=id).first()
+        existing_animal = Animals.query.filter_by(id=id, center_id=center_id)\
+            .first()
 
         existing_animal.name = name
-        existing_animal.center_id = Center.get_center_by_login(center_login).id
         existing_animal.species_id = Species.get_concrete_species_by_name(species_name).id
         existing_animal.description = description
         existing_animal.age = age
@@ -136,8 +134,7 @@ class Animals(db.Model):
             :type str
                 The login of center
         """
-        on_delete = Animals.query.filter_by(id=id).first()
-        if on_delete.center_id == Center.get_center_by_login(center_login).id:
-            db.session.delete(on_delete)
-        else:
-            raise NoAccessException()
+        on_delete = Animals.query.filter_by(id=id, center_id=Center.get_center_by_login(center_login).id).first()
+        if not on_delete:
+            raise NoAccessException(f"center {center_login} either is not owner of animal, or animal does not exists")
+        db.session.delete(on_delete)

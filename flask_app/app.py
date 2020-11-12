@@ -186,7 +186,7 @@ def register_animal(**kwargs):
           type: dict
     """
     get_request = request.form
-    jsonschema.validate(get_request, request_schemas.register_update_animal_schema)
+    jsonschema.validate(get_request, request_schemas.register_animal_schema)
     name, center, species, age, price, description = unwrap_data_from_animal_request(get_request)
 
     try:
@@ -242,10 +242,10 @@ def replace_animal(animal_id, **kwargs):
           type: dict
     """
     get_request = request.form
-    jsonschema.validate(get_request, request_schemas.register_update_animal_schema)
-    name, center, species, age, price, description = unwrap_data_from_animal_request(get_request)
+    jsonschema.validate(get_request, request_schemas.update_animal_schema)
+    name, _, species, age, price, description = unwrap_data_from_animal_request(get_request)
 
-    Animals.update_animal(animal_id, name, center, species, description, age, price)
+    Animals.update_animal(animal_id, name, kwargs['id'], species, description, age, price)
     db.session.commit()
     send_message_to_log("PUT", f"/animals/{animal_id}", kwargs['id'], "animal", str(animal_id))
 

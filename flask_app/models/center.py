@@ -1,4 +1,5 @@
 from flask_app.config.settings import db
+from flask_app.utils import CenterDoesNotExistException
 
 
 class Center(db.Model):
@@ -85,6 +86,8 @@ class Center(db.Model):
                 The instance of Center
         """
         center = Center.query.filter_by(login=login).first()
+        if not center:
+            raise CenterDoesNotExistException(f"No such center with login: {center}")
         return center
 
     @classmethod

@@ -27,6 +27,10 @@ class SpeciesDoesNotExistException(Exception):
     pass
 
 
+class CenterDoesNotExistException(Exception):
+    pass
+
+
 def token_required(f):
     """
     Wrapper for those request handlers, which needed to be secured by jwt token
@@ -83,7 +87,7 @@ def unwrap_data_from_animal_request(get_request):
             A tuple of parameters to create animals
     """
     name = get_request['name']
-    center = get_request['center']
+    center = get_request.get('center', None)
     species = get_request['species']
     age = get_request['age']
     price = get_request.get('price', None)

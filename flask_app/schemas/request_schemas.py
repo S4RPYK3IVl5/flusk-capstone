@@ -17,7 +17,7 @@ login_center_schema = {
     "required": ["login", "password"]
 }
 
-register_update_animal_schema = {
+register_animal_schema = {
     "type": "object",
     "properties": {
         "name": {"type": "string"},
@@ -28,6 +28,18 @@ register_update_animal_schema = {
         "description": {"type": "string"}
     },
     "required": ["name", "center", "species", "age"]
+}
+
+update_animal_schema = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "species": {"type": "string"},
+        "age": {"type": "string"},
+        "price": {"type": "string"},
+        "description": {"type": "string"}
+    },
+    "required": ["name", "species", "age"]
 }
 
 register_species_schema = {

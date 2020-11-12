@@ -1,4 +1,5 @@
 from flask_app.config.settings import db
+from flask_app.utils import SpeciesDoesNotExistException
 
 
 class Species(db.Model):
@@ -68,4 +69,6 @@ class Species(db.Model):
                 The instance of Species
         """
         specie = Species.query.filter_by(name=name).first()
+        if not specie:
+            raise SpeciesDoesNotExistException(f"No such center with name: {name}")
         return specie
